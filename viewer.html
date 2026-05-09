@@ -228,13 +228,31 @@ function renderFuoriUsoViewer() {
 <div class="toast" id="toast"></div>
 
 <script>
-const firebaseConfig = { databaseURL: "https://gestione-attrezzi-usar-default-rtdb.europe-west1.firebasedatabase.app/" };
+const firebaseConfig = { databaseURL: "https://container-cl-default-rtdb.europe-west1.firebasedatabase.app/" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let attrezzi  = {};
 let movimenti = [];
 let currentFilter = 'all';
+
+// ── CARICA LOGO E NOME SUBITO (prima del login) ────────
+db.ref('config/appName').once('value', snap => {
+  const name = snap.val();
+  if (name) {
+    const h = document.querySelector('.logo h1');
+    if (h) h.textContent = name;
+    document.title = name + ' — Visualizzatore';
+  }
+});
+db.ref('config/appLogo').once('value', snap => {
+  const logo = snap.val();
+  if (logo) {
+    document.querySelectorAll('.logo-icon').forEach(el => {
+      el.innerHTML = `<img src="${logo}" style="width:100%;height:100%;object-fit:contain;">`;
+    });
+  }
+});
 
 // Load viewer password hash from Firebase
 window._pwdHashVw = null;

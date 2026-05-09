@@ -675,12 +675,36 @@
 
 <script>
 // ── FIREBASE ───────────────────────────────────────────
-const firebaseConfig = { databaseURL: "https://gestione-attrezzi-usar-default-rtdb.europe-west1.firebasedatabase.app/" };
+const firebaseConfig = { databaseURL: "https://container-cl-default-rtdb.europe-west1.firebasedatabase.app/" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const movimentiRef = db.ref('movimenti');
 const attrezziRef  = db.ref('attrezzi');
 const personeRef   = db.ref('persone');
+
+// ── CARICA LOGO E NOME SUBITO (prima del login) ────────
+db.ref('config/appName').once('value', snap => {
+  const name = snap.val();
+  if (name) {
+    const l = document.getElementById('appTitleLogin');
+    const h = document.getElementById('appTitleHeader');
+    if (l) l.textContent = name;
+    if (h) h.textContent = name;
+    document.title = name + ' — Sistema Inventario';
+    const inp = document.getElementById('appNameInput');
+    if (inp) inp.value = name;
+  }
+});
+db.ref('config/appLogo').once('value', snap => {
+  const logo = snap.val();
+  if (logo) {
+    document.querySelectorAll('.login-logo, .logo-icon').forEach(el => {
+      el.innerHTML = `<img src="${logo}" style="width:100%;height:100%;object-fit:contain;">`;
+    });
+    const preview = document.getElementById('logoPreview');
+    if (preview) preview.innerHTML = `<img src="${logo}" style="width:100%;height:100%;object-fit:contain;">`;
+  }
+});
 
 // ── HASH ───────────────────────────────────────────────
 const PASSWORD_HASH  = "63e51d0e7c982e2c44c56ccb30c5f31cb633d5d5415c193cf75367208214eccf";
